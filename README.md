@@ -14,6 +14,7 @@ The platform must enable the customers to
 1. Request a driver to a specific location immediately or at a specific time
     - With it provide necessary from and to locations
     - Register personal information
+
 The platform might enable the customers to
 2. Cancel a performed request for a driver
 3. See a list of historical requests made
