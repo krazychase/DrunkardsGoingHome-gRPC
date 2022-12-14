@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package tester;
+
+service Tester{
+    rpc GetHello(Message) returns (Response) {}
+}
+
+message Message{
+    string message = 1;
+}
+
+message Response {
+    string message = 1;
+    bool code = 2;
+}
