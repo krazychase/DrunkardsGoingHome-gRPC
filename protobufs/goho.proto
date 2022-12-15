@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package goho;
+
+service GoHoService{
+    rpc GetUser(GetUserRequest) returns (User) {}
+    rpc AddUser(User) returns (Confirmation) {}
+    rpc GetRides(GetRideRequest) returns (stream Ride) {}
+    rpc AddRide(Ride) returns (Confirmation) {}
+    rpc UpdateRide(Ride) returns (Confirmation) {}
+}
+
+message Confirmation{
+    string response = 1;
+    int32 code = 2;
+}
+
+message User{
+    int32 userid = 1;
+    string username = 2;
+    string password = 3;
+    string home_location = 4;
+}
+
+message GetUserRequest{
+    int32 userid = 1;
+}
+
+message Ride{
+    int32 rideid = 1;
+    int32 rider = 2;
+    int32 driver = 3;
+    string destination = 4;
+    string location = 5;
+    string time = 6;
+    string status = 7;
+}
+
+message GetRideRequest{
+    int32 rideid = 1;
+}
