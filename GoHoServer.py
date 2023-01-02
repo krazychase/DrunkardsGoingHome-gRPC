@@ -23,11 +23,11 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         '''
         userID = request.userid
         # Get user info from DB
-        user = User()
+        user = User(userID, 'TestName', 'TestPassword', 'TestLocation')
         response = {'userid':user.userid, 'username':user.username, 'password':user.password, 
                     'home_location':user.homeLocation}
 
-        return pb2.Response(**response)
+        return pb2.User(**response)
 
     def AddUser(self, request, context):
         '''
@@ -38,7 +38,7 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         # Add user to DB
         response = {'response':f'User {user.userid}', 'code':0}
 
-        return pb2.Response(**response)
+        return pb2.Confirmation(**response)
 
     def GetRides(self, request, context):
         '''
@@ -46,12 +46,14 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         '''
         rideid = request.rideid
         # Get ride info from DB
-        ride = Ride()
-        response = {'rideid':ride.rideid, 'rider':ride.rider, 'driver':ride.driver, 
-                    'destination':ride.destination, 'location':ride.location, 'time':ride.time, 
-                    'status':ride.status}
+        rides=[Ride(12345, 6789, 1011, 'testDest', 'testLoc', 'testTime', 'active'), 
+                Ride(9876, 5432, 1111, 'testDest', 'testLoc', 'testTime', 'active')]
+        for ride in rides:
+            response = {'rideid':ride.rideid, 'rider':ride.rider, 'driver':ride.driver, 
+                        'destination':ride.destination, 'location':ride.location, 'time':ride.time, 
+                        'status':ride.status}
 
-        return pb2.Response(**response)
+            yield pb2.Ride(**response)
 
     def AddRide(self, request, context):
         '''
@@ -63,7 +65,7 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         # Add ride to DB
         response = {'response':f'Ride {ride.rideid}', 'code':0}
 
-        return pb2.Response(**response)
+        return pb2.Confirmation(**response)
 
     def UpdateRide(self, request, context):
         '''
@@ -74,6 +76,8 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
                     request.location, request.time, request.status)
         # Update ride in DB
         response = {'response':f'Ride {ride.rideid}', 'code':0}
+
+        return pb2.Confirmation(**response)
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
