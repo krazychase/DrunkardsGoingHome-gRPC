@@ -7,29 +7,8 @@ from concurrent import futures
 import protobufs.goho_pb2 as pb2
 import protobufs.goho_pb2_grpc as pb2_grpc
 
-class User():
-    '''
-    Contains User information
-    '''
-    def __init__(self, userid=None, username=None, password=None, homeLocation=None):
-        self.userid = userid
-        self.username = username
-        self.password = password
-        self.homeLocation = homeLocation
-
-class Ride():
-    '''
-    Contains Ride Information
-    '''
-    def __init__(self, rideid=None, rider=None, driver=None, destination=None, location=None, 
-                time=None, status=None):
-        self.rideid = rideid
-        self.rider = rider
-        self.driver = driver
-        self.destination = destination
-        self.location = location
-        self.time = time
-        self.status = status
+from user import User
+from ride import Ride
 
 class GoHoService(pb2_grpc.GoHoServiceServicer):
     '''
