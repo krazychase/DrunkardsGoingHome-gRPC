@@ -6,6 +6,8 @@ import grpc
 from concurrent import futures
 import protobufs.goho_pb2 as pb2
 import protobufs.goho_pb2_grpc as pb2_grpc
+from pathlib import Path
+import sqlite3
 
 from user import User
 from ride import Ride
@@ -15,15 +17,21 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
     gRPC Service
     '''
     def __init__(self):
-        pass
+        self.db = Path().cwd() / 'data' / 'data.db'
 
     def GetUser(self, request, context):
         '''
         Returns User information
         '''
         userID = request.userid
-        # Get user info from DB
-        user = User(userID, 'TestName', 'TestPassword', 'TestLocation')
+        with sqlite3.connect(self.db) as conn:      # Get user info from DB
+            cur = conn.cursor()
+            sql = '''   SELECT *
+                        FROM Users
+                        WHERE UserID=? ''', (userID,)
+            cur.execute(sql)
+            data = cur.fetchone()
+        user = User(data[0], data[1], data[2], data[3])
         response = {'userid':user.userid, 'username':user.username, 'password':user.password, 
                     'home_location':user.homeLocation}
 
@@ -35,7 +43,12 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         Returns confirmation
         '''
         user = User(request.userid, request.username, request.password, request.home_location)
-        # Add user to DB
+        with sqlite3.connect(self.db) as conn:      # Add user to DB
+            cur = conn.cursor()
+            sql = '''   INSERT INTO User
+                        VALUES (?,?,?,?) ''', (user.userid, user.username, user.password, user.homeLocation)
+            cur.execute(sql)
+            conn.commit()
         response = {'response':f'User {user.userid}', 'code':0}
 
         return pb2.Confirmation(**response)
@@ -45,9 +58,17 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         Returns ride information
         '''
         rideid = request.rideid
-        # Get ride info from DB
-        rides=[Ride(12345, 6789, 1011, 'testDest', 'testLoc', 'testTime', 'active'), 
-                Ride(9876, 5432, 1111, 'testDest', 'testLoc', 'testTime', 'active')]
+        with sqlite3.connect(self.db) as conn:      # Get ride info from DB
+            cur = conn.cursor()
+            sql = '''   SELECT *
+                        FROM Rides
+                        WHERE RideID=? ''', (rideid,)
+            cur.execute(sql)
+            data = cur.fetchall()
+        rides = []
+        for ride in data:
+            rides.append(Ride(ride[0], ride[1], ride[2], ride[3], ride[4], ride[5], ride[6]))
+
         for ride in rides:
             response = {'rideid':ride.rideid, 'rider':ride.rider, 'driver':ride.driver, 
                         'destination':ride.destination, 'location':ride.location, 'time':ride.time, 
@@ -62,7 +83,13 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         '''
         ride = Ride(request.rideid, request.rider, request.driver, request.destination, 
                     request.location, request.time, request.status)
-        # Add ride to DB
+        with sqlite3.connect(self.db) as conn:      # Add ride to DB
+            cur = conn.cursor()
+            sql = '''   INSERT INTO Rides
+                        VALUES (?,?,?,?,?,?,?) ''', (ride.rideid, ride.rider, ride.driver, 
+                                            ride.destination, ride.location, ride.time, ride.status)
+            cur.execute(sql)
+            conn.commit()
         response = {'response':f'Ride {ride.rideid}', 'code':0}
 
         return pb2.Confirmation(**response)
@@ -74,7 +101,30 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         '''
         ride = Ride(request.rideid, request.rider, request.driver, request.destination, 
                     request.location, request.time, request.status)
-        # Update ride in DB
+
+        rideDict = {}       # Determine what info to update
+        if ride.rider:
+            rideDict['Rider'] = ride.rider
+        if ride.driver:
+            rideDict['Driver'] = ride.driver
+        if ride.destination:
+            rideDict['Destination'] = ride.destination
+        if ride.location:
+            rideDict['Location'] = ride.location
+        if ride.time:
+            rideDict['Time'] = ride.time
+        if ride.status:
+            rideDict['Status'] = ride.status
+
+        with sqlite3.connect(self.db) as conn:      # Update ride in DB
+            cur = conn.cursor()
+            # TODO: Figure out a better way to do dynamic updates
+            for field, data in rideDict.items():
+                sql = f'''  UPDATE Rides
+                            SET {field} = ?
+                            WHERE rideid = ? ''', (data,)
+                cur.execute(sql)
+            conn.commit()
         response = {'response':f'Ride {ride.rideid}', 'code':0}
 
         return pb2.Confirmation(**response)
