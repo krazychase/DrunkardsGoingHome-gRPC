@@ -26,10 +26,10 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         userID = request.userid
         with sqlite3.connect(self.db) as conn:      # Get user info from DB
             cur = conn.cursor()
-            sql = '''   SELECT *
-                        FROM Users
-                        WHERE UserID=? ''', (userID,)
-            cur.execute(sql)
+            sql, params = '''   SELECT *
+                                FROM Users
+                                WHERE UserID=? ''', (userID,)
+            cur.execute(sql, params)
             data = cur.fetchone()
         user = User(data[0], data[1], data[2], data[3])
         response = {'userid':user.userid, 'username':user.username, 'password':user.password, 
@@ -42,12 +42,12 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         Adds user to DB
         Returns confirmation
         '''
-        user = User(request.userid, request.username, request.password, request.home_location)
+        user = User(None, request.username, request.password, request.home_location)
         with sqlite3.connect(self.db) as conn:      # Add user to DB
             cur = conn.cursor()
-            sql = '''   INSERT INTO User
-                        VALUES (?,?,?,?) ''', (user.userid, user.username, user.password, user.homeLocation)
-            cur.execute(sql)
+            sql, params = '''   INSERT INTO Users
+                                VALUES (?,?,?,?) ''', (user.userid, user.username, user.password, user.homeLocation)
+            cur.execute(sql, params)
             conn.commit()
         response = {'response':f'User {user.userid}', 'code':0}
 
@@ -60,10 +60,10 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         rideid = request.rideid
         with sqlite3.connect(self.db) as conn:      # Get ride info from DB
             cur = conn.cursor()
-            sql = '''   SELECT *
-                        FROM Rides
-                        WHERE RideID=? ''', (rideid,)
-            cur.execute(sql)
+            sql, params = '''   SELECT *
+                                FROM Rides
+                                WHERE RideID=? ''', (rideid,)
+            cur.execute(sql, params)
             data = cur.fetchall()
         rides = []
         for ride in data:
@@ -81,14 +81,14 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
         Adds ride to DB
         Returns confirmation
         '''
-        ride = Ride(request.rideid, request.rider, request.driver, request.destination, 
+        ride = Ride(None, request.rider, request.driver, request.destination, 
                     request.location, request.time, request.status)
         with sqlite3.connect(self.db) as conn:      # Add ride to DB
             cur = conn.cursor()
-            sql = '''   INSERT INTO Rides
-                        VALUES (?,?,?,?,?,?,?) ''', (ride.rideid, ride.rider, ride.driver, 
+            sql, params = '''   INSERT INTO Rides
+                                VALUES (?,?,?,?,?,?,?) ''', (ride.rideid, ride.rider, ride.driver, 
                                             ride.destination, ride.location, ride.time, ride.status)
-            cur.execute(sql)
+            cur.execute(sql, params)
             conn.commit()
         response = {'response':f'Ride {ride.rideid}', 'code':0}
 
@@ -120,10 +120,10 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
             cur = conn.cursor()
             # TODO: Figure out a better way to do dynamic updates
             for field, data in rideDict.items():
-                sql = f'''  UPDATE Rides
-                            SET {field} = ?
-                            WHERE rideid = ? ''', (data,)
-                cur.execute(sql)
+                sql, params = f'''  UPDATE Rides
+                                    SET {field} = ?
+                                    WHERE rideid = ? ''', (data,ride.rideid)
+                cur.execute(sql, params)
             conn.commit()
         response = {'response':f'Ride {ride.rideid}', 'code':0}
 
