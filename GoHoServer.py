@@ -49,7 +49,11 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
                                 VALUES (?,?,?,?) ''', (user.userid, user.username, user.password, user.homeLocation)
             cur.execute(sql, params)
             conn.commit()
-        response = {'response':f'User {user.userid}', 'code':0}
+            sql = '''   SELECT MAX(UserID)
+                        FROM Users '''      # Get newest user
+            cur.execute(sql)
+            newestUser = cur.fetchone()[0]
+        response = {'response':f'User {newestUser}', 'code':0}
 
         return pb2.Confirmation(**response)
 
@@ -90,7 +94,11 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
                                             ride.destination, ride.location, ride.time, ride.status)
             cur.execute(sql, params)
             conn.commit()
-        response = {'response':f'Ride {ride.rideid}', 'code':0}
+            sql = '''   SELECT MAX(RideID)
+                        FROM Rides '''      # Get newest ride
+            cur.execute(sql)
+            newestRide = cur.fetchone()[0]
+        response = {'response':f'Ride {newestRide}', 'code':0}
 
         return pb2.Confirmation(**response)
 
