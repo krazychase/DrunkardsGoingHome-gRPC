@@ -16,6 +16,7 @@ The platform must enable the customers to
     - Register personal information
 
 The platform might enable the customers to
+
 2. Cancel a performed request for a driver
 3. See a list of historical requests made
 4. See how much time is left until the driver comes or if it's going to be delayed in real time
