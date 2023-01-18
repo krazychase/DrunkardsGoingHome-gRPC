@@ -5,9 +5,10 @@ package goho;
 service GoHoService{
     rpc GetUser(GetUserRequest) returns (User) {}
     rpc AddUser(User) returns (Confirmation) {}
-    rpc GetRides(GetRideRequest) returns (stream Ride) {}
+    rpc GetRide(GetRideRequest) returns (Ride) {}
     rpc AddRide(Ride) returns (Confirmation) {}
     rpc UpdateRide(Ride) returns (Confirmation) {}
+    rpc GetUserRides(GetUserRidesRequest) returns (stream Ride) {}
 }
 
 message Confirmation{
@@ -38,4 +39,8 @@ message Ride{
 
 message GetRideRequest{
     int32 rideid = 1;
+}
+
+message GetUserRidesRequest{
+    int32 userid = 1;
 }

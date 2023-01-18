@@ -133,6 +133,30 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
 
         return pb2.Confirmation(**response)
 
+    def GetUserRides(self, request, context):
+        '''
+        Returns stream of all user rides
+        '''
+        userid = request.userid
+        with sqlite3.connect(self.db) as conn:      # Get ride info from DB
+            cur = conn.cursor()
+            sql, params = '''   SELECT *
+                                FROM Rides
+                                WHERE Rider=? ''', (userid,)
+            cur.execute(sql, params)
+            data = cur.fetchall()
+        rides = []
+        for ride in data:
+            rides.append(Ride(ride[0], ride[1], ride[2], ride[3], ride[4], ride[5], ride[6]))
+
+        for ride in rides:
+            response = {'rideid':ride.rideid, 'rider':ride.rider, 'driver':ride.driver, 
+                        'destination':ride.destination, 'location':ride.location, 'time':ride.time, 
+                        'status':ride.status}
+
+            yield pb2.Ride(**response)
+
+
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     pb2_grpc.add_GoHoServiceServicer_to_server(GoHoService(), server)

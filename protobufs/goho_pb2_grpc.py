@@ -24,8 +24,8 @@ class GoHoServiceStub(object):
                 request_serializer=protobufs_dot_goho__pb2.User.SerializeToString,
                 response_deserializer=protobufs_dot_goho__pb2.Confirmation.FromString,
                 )
-        self.GetRides = channel.unary_stream(
-                '/goho.GoHoService/GetRides',
+        self.GetRide = channel.unary_unary(
+                '/goho.GoHoService/GetRide',
                 request_serializer=protobufs_dot_goho__pb2.GetRideRequest.SerializeToString,
                 response_deserializer=protobufs_dot_goho__pb2.Ride.FromString,
                 )
@@ -38,6 +38,11 @@ class GoHoServiceStub(object):
                 '/goho.GoHoService/UpdateRide',
                 request_serializer=protobufs_dot_goho__pb2.Ride.SerializeToString,
                 response_deserializer=protobufs_dot_goho__pb2.Confirmation.FromString,
+                )
+        self.GetUserRides = channel.unary_stream(
+                '/goho.GoHoService/GetUserRides',
+                request_serializer=protobufs_dot_goho__pb2.GetUserRidesRequest.SerializeToString,
+                response_deserializer=protobufs_dot_goho__pb2.Ride.FromString,
                 )
 
 
@@ -56,7 +61,7 @@ class GoHoServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetRides(self, request, context):
+    def GetRide(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -69,6 +74,12 @@ class GoHoServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def UpdateRide(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetUserRides(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -87,8 +98,8 @@ def add_GoHoServiceServicer_to_server(servicer, server):
                     request_deserializer=protobufs_dot_goho__pb2.User.FromString,
                     response_serializer=protobufs_dot_goho__pb2.Confirmation.SerializeToString,
             ),
-            'GetRides': grpc.unary_stream_rpc_method_handler(
-                    servicer.GetRides,
+            'GetRide': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetRide,
                     request_deserializer=protobufs_dot_goho__pb2.GetRideRequest.FromString,
                     response_serializer=protobufs_dot_goho__pb2.Ride.SerializeToString,
             ),
@@ -101,6 +112,11 @@ def add_GoHoServiceServicer_to_server(servicer, server):
                     servicer.UpdateRide,
                     request_deserializer=protobufs_dot_goho__pb2.Ride.FromString,
                     response_serializer=protobufs_dot_goho__pb2.Confirmation.SerializeToString,
+            ),
+            'GetUserRides': grpc.unary_stream_rpc_method_handler(
+                    servicer.GetUserRides,
+                    request_deserializer=protobufs_dot_goho__pb2.GetUserRidesRequest.FromString,
+                    response_serializer=protobufs_dot_goho__pb2.Ride.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -147,7 +163,7 @@ class GoHoService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GetRides(request,
+    def GetRide(request,
             target,
             options=(),
             channel_credentials=None,
@@ -157,7 +173,7 @@ class GoHoService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/goho.GoHoService/GetRides',
+        return grpc.experimental.unary_unary(request, target, '/goho.GoHoService/GetRide',
             protobufs_dot_goho__pb2.GetRideRequest.SerializeToString,
             protobufs_dot_goho__pb2.Ride.FromString,
             options, channel_credentials,
@@ -194,5 +210,22 @@ class GoHoService(object):
         return grpc.experimental.unary_unary(request, target, '/goho.GoHoService/UpdateRide',
             protobufs_dot_goho__pb2.Ride.SerializeToString,
             protobufs_dot_goho__pb2.Confirmation.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetUserRides(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/goho.GoHoService/GetUserRides',
+            protobufs_dot_goho__pb2.GetUserRidesRequest.SerializeToString,
+            protobufs_dot_goho__pb2.Ride.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
