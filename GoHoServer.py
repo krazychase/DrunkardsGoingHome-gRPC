@@ -57,28 +57,24 @@ class GoHoService(pb2_grpc.GoHoServiceServicer):
 
         return pb2.Confirmation(**response)
 
-    def GetRides(self, request, context):
+    def GetRide(self, request, context):
         '''
         Returns ride information
         '''
         rideid = request.rideid
-        with sqlite3.connect(self.db) as conn:      # Get ride info from DB
+        with sqlite3.connect(self.db) as conn:      # Get user info from DB
             cur = conn.cursor()
             sql, params = '''   SELECT *
                                 FROM Rides
                                 WHERE RideID=? ''', (rideid,)
             cur.execute(sql, params)
-            data = cur.fetchall()
-        rides = []
-        for ride in data:
-            rides.append(Ride(ride[0], ride[1], ride[2], ride[3], ride[4], ride[5], ride[6]))
+            data = cur.fetchone()
+        ride = Ride(data[0], data[1], data[2], data[3], data[4], data[5], data[6])
+        response = {'rideid':ride.rideid, 'rider':ride.rider, 'driver':ride.driver, 
+                    'destination':ride.destination, 'location':ride.location, 'time':ride.time, 
+                    'status':ride.status}
 
-        for ride in rides:
-            response = {'rideid':ride.rideid, 'rider':ride.rider, 'driver':ride.driver, 
-                        'destination':ride.destination, 'location':ride.location, 'time':ride.time, 
-                        'status':ride.status}
-
-            yield pb2.Ride(**response)
+        return pb2.Ride(**response)
 
     def AddRide(self, request, context):
         '''

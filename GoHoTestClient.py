@@ -39,20 +39,19 @@ class GoHoClient(object):
         response = self.stub.AddUser(message)
         print(response)
 
-    def testGetRides(self):
+    def testGetRide(self):
         '''
         Tests GetRides
         '''
         message = pb2.GetRideRequest(rideid=1)
-        response = self.stub.GetRides(message)
-        for resp in response:
-            print(resp)
+        response = self.stub.GetRide(message)
+        print(response)
 
     def testAddRide(self):
         '''
         Tests AddRides
         '''
-        ride = Ride(None, 1, 1, 'TestDestination', 
+        ride = Ride(None, 1234, 9999, 'TestDestination', 
             'TestLocation', str(datetime.now(timezone.utc)), 'ACTIVE')
         message = pb2.Ride(rideid=ride.rideid, rider=ride.rider, driver=ride.driver, destination=ride.destination, 
                             location=ride.location, time=ride.time, status=ride.status)
@@ -78,9 +77,9 @@ if __name__ == '__main__':
     client.testGetUser()
     print('Testing Add Ride . . . ')
     client.testAddRide()
-    print('Testing Get Rides . . . ')
-    client.testGetRides()
+    print('Testing Get Ride . . . ')
+    client.testGetRide()
     print('Testing Update Ride . . . ')
     client.testUpdateRide()
-    client.testGetRides()
+    client.testGetRide()
     print('Testing Complete.')
