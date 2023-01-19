@@ -1,6 +1,15 @@
 # Drunkards going home
 ### Backend dev task 2022Q1
 
+## Usage
+- Ensure gRPC for python is installed with `pip install grpcio`  
+- Run GoHoServer.py in terminal
+- Run GoHoTestClient.py in seperate terminal
+    - TestAddRide simulates requesting a driver with location, time, and destination
+    - TestAddUser simulates registering personal information
+    - TestUpdateRide simulates altering a ride
+    - TestGetUserRides simulates viewing a list of historic requests
+
 ## The story...
 Loads of people are waiting for 代行 coming to pick them up, waiting sometimes for more than two hours despite there being available drivers where they don't know... And there's too many phone numbers to call while drunk! Help everyone get help quicker!
 ## Description
